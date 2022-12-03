@@ -72,6 +72,24 @@ int main()
     return EXIT_SUCCESS;
 }
 
+void TriangleDisplayApplication::mainLoop()
+{
+    //Add event loop
+    while (!glfwWindowShouldClose(window))
+    {
+        //Get user events such as key-press/ mouse-click
+        glfwPollEvents();
+    }
+}
+
+void TriangleDisplayApplication::cleanup()
+{
+    vkDestroyDevice(vkLogicalDevice, nullptr);
+    vkDestroyInstance(vkInstance, nullptr);
+    glfwDestroyWindow(window);
+    glfwTerminate();
+}
+
 void TriangleDisplayApplication::initWindow()
 {
     glfwInit();
@@ -86,30 +104,12 @@ void TriangleDisplayApplication::initWindow()
 
 }
 
-bool TriangleDisplayApplication::checkValidationLayerSupport(const std::vector<const char*>& validationLayers)
+void TriangleDisplayApplication::initVulkan()
 {
-    //Fetch the available validation layers
-    uint32_t layerCount;
-    vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
-
-    //Enumerate the validation layers array into a vector
-    std::vector<VkLayerProperties> availableLayers(layerCount);
-    vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
-
-    for (const char* layerName : validationLayers) {
-        bool layerFound = false;
-        for (const auto& layerProperties : availableLayers) {
-            if (strcmp(layerName, layerProperties.layerName) == 0) {
-                layerFound = true;
-                break;
-            }
-        }
-        if (!layerFound) {
-            return false;
-        }
-    }
-
-    return true;
+    createInstance();
+    createSurface();
+    pickPhysicalDevice();
+    createLogicalDevice();
 }
 
 void TriangleDisplayApplication::createInstance()
@@ -183,29 +183,6 @@ void TriangleDisplayApplication::pickPhysicalDevice()
     }
 }
 
-QueueFamilyIndices TriangleDisplayApplication::findQueueFamilies(VkPhysicalDevice device) {
-
-    QueueFamilyIndices indices;
-
-    uint32_t queueFamilyCount = 0;
-    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
-
-    std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
-    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
-
-    int i = 0;
-    for (const auto& queueFamily : queueFamilies) {
-        if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
-            indices.graphicsFamily = i;
-            break;
-        }
-
-        i++;
-    }
-
-    return indices;
-}
-
 void TriangleDisplayApplication::createLogicalDevice()
 {
     QueueFamilyIndices indices = findQueueFamilies(vkPhysicalDevice);
@@ -239,8 +216,57 @@ void TriangleDisplayApplication::createLogicalDevice()
     }
 
     if (vkCreateDevice(vkPhysicalDevice, &createInfo, nullptr, &vkLogicalDevice) != VK_SUCCESS) {
-         throw std::runtime_error("failed to create logical device!");
+        throw std::runtime_error("failed to create logical device!");
     }
+}
+
+bool TriangleDisplayApplication::checkValidationLayerSupport(const std::vector<const char*>& validationLayers)
+{
+    //Fetch the available validation layers
+    uint32_t layerCount;
+    vkEnumerateInstanceLayerProperties(&layerCount, nullptr);
+
+    //Enumerate the validation layers array into a vector
+    std::vector<VkLayerProperties> availableLayers(layerCount);
+    vkEnumerateInstanceLayerProperties(&layerCount, availableLayers.data());
+
+    for (const char* layerName : validationLayers) {
+        bool layerFound = false;
+        for (const auto& layerProperties : availableLayers) {
+            if (strcmp(layerName, layerProperties.layerName) == 0) {
+                layerFound = true;
+                break;
+            }
+        }
+        if (!layerFound) {
+            return false;
+        }
+    }
+
+    return true;
+}
+
+QueueFamilyIndices TriangleDisplayApplication::findQueueFamilies(VkPhysicalDevice device) {
+
+    QueueFamilyIndices indices;
+
+    uint32_t queueFamilyCount = 0;
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, nullptr);
+
+    std::vector<VkQueueFamilyProperties> queueFamilies(queueFamilyCount);
+    vkGetPhysicalDeviceQueueFamilyProperties(device, &queueFamilyCount, queueFamilies.data());
+
+    int i = 0;
+    for (const auto& queueFamily : queueFamilies) {
+        if (queueFamily.queueFlags & VK_QUEUE_GRAPHICS_BIT) {
+            indices.graphicsFamily = i;
+            break;
+        }
+
+        i++;
+    }
+
+    return indices;
 }
 
 bool TriangleDisplayApplication::isDeviceSuitable(VkPhysicalDevice vkPhysicalDevice)
@@ -254,28 +280,4 @@ bool TriangleDisplayApplication::isDeviceSuitable(VkPhysicalDevice vkPhysicalDev
 
     QueueFamilyIndices indices = findQueueFamilies(vkPhysicalDevice);
     return indices.isComplete();
-}
-
-void TriangleDisplayApplication::initVulkan()
-{
-    createInstance();
-    pickPhysicalDevice();
-}
-
-void TriangleDisplayApplication::mainLoop()
-{
-    //Add event loop
-    while (!glfwWindowShouldClose(window))
-    {
-        //Get user events such as key-press/ mouse-click
-        glfwPollEvents();
-    }
-}
-
-void TriangleDisplayApplication::cleanup()
-{
-    vkDestroyDevice(vkLogicalDevice, nullptr);
-    vkDestroyInstance(vkInstance, nullptr);
-    glfwDestroyWindow(window);
-    glfwTerminate();
 }
