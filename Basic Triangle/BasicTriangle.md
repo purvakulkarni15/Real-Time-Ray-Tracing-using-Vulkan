@@ -54,7 +54,7 @@
 
 ### Key Learnings
    
-![Presentation flow chart](https://github.com/purvakulkarni15/Real-Time-Ray-Tracing-using-Vulkan/edit/main/Basic%20Triangle/Flowcharts/vulkan1.png)
+![Presentation flow chart](https://github.com/purvakulkarni15/Real-Time-Ray-Tracing-using-Vulkan/blob/main/Basic%20Triangle/vulkan2.png)
 
 ### 1. WSI Extensions
 1. VK_KHR_surface exposes a VkSurfaceKHR object that represents an abstract type of surface to present rendered images. The surface in our program will be backed by the window created using GLFW. 
