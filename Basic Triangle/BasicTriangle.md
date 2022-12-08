@@ -19,6 +19,8 @@
 4. Create a logical device (VkDevice) to select the features from physical device and submit them through queues (VkQueue)
 ### Key Learnings:
 
+![Components flow chart](https://github.com/purvakulkarni15/Real-Time-Ray-Tracing-using-Vulkan/blob/main/Basic%20Triangle/Flowcharts/vulkan1.png)
+
 #### Standard steps:
 ##### Create/Destroy an object
 1. Fill a struct/s with information necessary for object creation.
@@ -29,7 +31,7 @@
 1. vKEnumerate----(--, &count, nullptr)
 2. Create a DS to hold options: vector<VKType> vec(count)
 3. vKEnumerate----(--,&count, vec.data())
-
+   
 #### 1. Extensions:
   1. A graphics card may have a unique functionality that is exposed to developers by Vulkan via extensions.
   2. Developer needs to query any such extensions/capabilities explicitly while creating VkInstance.
@@ -54,7 +56,7 @@
 
 ### Key Learnings
    
-![Presentation flow chart](https://github.com/purvakulkarni15/Real-Time-Ray-Tracing-using-Vulkan/blob/main/Basic%20Triangle/vulkan2.png)
+![Presentation flow chart](https://github.com/purvakulkarni15/Real-Time-Ray-Tracing-using-Vulkan/blob/main/Basic%20Triangle/Flowcharts/vulkan2.png)
 
 ### 1. WSI Extensions
 1. VK_KHR_surface exposes a VkSurfaceKHR object that represents an abstract type of surface to present rendered images. The surface in our program will be backed by the window created using GLFW. 
