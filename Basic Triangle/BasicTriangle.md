@@ -10,11 +10,6 @@
 
 ## How to draw a triangle?
 
-## Standard steps to creating any object in Vulkan
-1. Fill a struct/s with information necessary for object creation.
-   Struct struc = {}; This means either zero initialize or initialize every member.
-3. Call vkCreate---(--,--,--, &object) and pass object as the out parameter.
-4. Use vkDestroy---() to deallocate its memory.
 
 ## 1. Setup
 ### Steps:
@@ -23,6 +18,18 @@
 3. Pick a supporting physical graphics device (VkPhysicalDevice) from the available list. Extensions such as "device support to RT" should be checked at this step.
 4. Create a logical device (VkDevice) to select the features from physical device and submit them through queues (VkQueue)
 ### Key Learnings:
+
+#### Standard steps:
+##### Create/Destroy an object
+1. Fill a struct/s with information necessary for object creation.
+   Struct struc = {}; This means either zero initialize or initialize every member.
+3. Call vkCreate---(--,--,--, &object) and pass object as the out parameter.
+4. Use vkDestroy---() to deallocate its memory.
+##### Get list of available options
+1. vKEnumerate----(--, &count, nullptr)
+2. Create a DS to hold options: vector<VKType> vec(count)
+3. vKEnumerate----(--,&count, vec.data())
+
 #### 1. Extensions:
   1. A graphics card may have a unique functionality that is exposed to developers by Vulkan via extensions.
   2. Developer needs to query any such extensions/capabilities explicitly while creating VkInstance.
@@ -36,8 +43,8 @@
   2. There are different types of queues coming from different queue families and each family of queues allows only a subset of commands.
   3. For example, a queue family that only allows memory transfer related commands.
 ### 4. Physical and Logical Devices:
-  1. Physical Device (VKPhysicalDevice) gives us all the properties of a device.
-  2. Logical Device (VKDevice) is used to interact with the driver of the physical device chosen through VkQueues.
+  1. Physical Device (VKPhysicalDevice) gives us all the properties of a device. (Read only)
+  2. Logical Device (VKDevice) is used to interact with the driver of the physical device chosen through VkQueues. (Repr of physical device. Vulkan's window into Graphics card)
 
 ## 2. Presentation
 ### Steps:
@@ -48,8 +55,8 @@
 ### Key Learnings
 
 ### 1. WSI Extensions
-1. VK_KHR_surface exposes a VkSurfaceKHR object that represents an abstract type of surface to present rendered images. The surface in our program will be backed by the window created using GLFW.
-2. This extension is included in list given by glfwGetRequiredInstanceExtensions
+1. VK_KHR_surface exposes a VkSurfaceKHR object that represents an abstract type of surface to present rendered images. The surface in our program will be backed by the window created using GLFW. 
+2. VK_KHR_SURFACE: This extension is included in list given by glfwGetRequiredInstanceExtensions. (Instance level extension)
 
 ### 2. Swap Chains
  1. Vulkan does not have default frame buffer to render and needs a structure called swap chain to store these buffers.
@@ -59,6 +66,9 @@
     - Basic surface capabilities (min/max number of images in swap chain, min/max width and height of images)
     - Surface formats (pixel format, color space)
     - Available presentation modes(conditions for "swapping" images to the screen.
+ 5. VK_KHR_Swapchains: Device level extension
+ 6. Link to tutorial: https://www.youtube.com/watch?v=nSzQcyQTtRY
+   
 ### 3. Presentation modes
 1. VK_PRESENT_MODE_IMMEDIATE_KHR: Images produced by application are transferred directly to screen which may result in tearing.
 2. VK_PRESENT_MODE_FIFO_KHR: Display takes an image from the front of the swap chain queue when the display is refreshed. Program inserts rendered images at the back of the queue. `vertical blank: The moment the display is refreshed.`
@@ -72,12 +82,16 @@
 5. GLFW uses two units when measuring sizes: pixels and screen coordinates. 
 
 ### 5. Image Tearing
-### Problem
+#### Problem
 1. A graphics adapter has a pointer to a surface that represents the image being displayed on the monitor, called a front buffer. 
 2. When monitor is refreshed, the graphics card sends the contents of the front buffer to the monitor to be displayed. 
 3. The monitor's refresh rates are very slow in comparison to the rest of the computer. (60 Hz (60 times per second) to 100 Hz.)
 4. If your application is updating the front buffer while the monitor is in the middle of a refresh, the image that is displayed will be cut in half with the upper half of the display containing the old image and the lower half containing the new image. 
 5. This problem is referred to as tearing.
-### Solution - Back buffering 
+#### Solution - Back buffering 
 1. vertical retrace (or vertical sync) operation: Monitor refreshes its image by moving a light pin horizontally, from the top left of the monitor and ending at the bottom right. When the light pin reaches the bottom, the monitor recalibrates the light pin by moving it back to the upper left so that the process can start again. This recalibration is called a vertical sync. 
 2. During a vertical sync, the monitor is not drawing anything, so any update to the front buffer will not be seen until the monitor starts to draw again. The vertical sync is relatively slow; however, not slow enough to render a complex scene while waiting. What is needed to avoid tearing and be able to render complex scenes is a process called back buffering.
+
+### 6. Image View
+   1. Image has two parts - memory(data) and View. 
+   2. Image view is a protocol used to access the image in vulkan.
