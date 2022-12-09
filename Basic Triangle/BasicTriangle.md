@@ -99,3 +99,25 @@
 ### 6. Image View
    1. Image has two parts - memory(data) and View. 
    2. Image view is a protocol used to access the image in vulkan.
+   
+## 3. Graphics Pipeline
+### 1. Simplified overview:
+1. Input assembler: collects the raw vertex/indices data from the specified buffers.
+2. Vertex shader: Runs for every vertex and generally applies transformations to turn vertex positions from model space to screen space. It also passes per-vertex data down the pipeline.
+3. Tessellation shader: Allows to subdivide geometry based on certain rules to increase the mesh quality.
+4. Geometry shader: Runs on every primitive (triangle, line, point) and can discard it or output more primitives than came in. (Not used much in today's applications because the performance is not that good on most graphics cards except for Intel's integrated GPUs.)
+5. Rasterization: Discretizes the primitives into fragments-pixel elements that they fill on the framebuffer. Any fragments that fall outside the screen are discarded and the attributes outputted by the vertex shader are interpolated across the fragments. Usually the fragments that are behind other primitive fragments are also discarded here because of depth testing.
+6. Fragment shader: Invoked for every fragment that survives rasterization. Determines the color using the interpolated data from the vertex shader, which can include things like texture coordinates and normals for lighting.
+7. Color blending: Applies operations to mix different fragments that map to the same pixel in the framebuffer. Fragments can simply overwrite each other, add up or be mixed based upon transparency.
+   
+### Steps
+1. Write shaders and compile them using glslc to get bytecodes in .spv format.
+2. Load the shader binaries and create a shader module.
+3. Create pipeline stage objects each for every shader module   
+   
+   
+### Key Learnings
+1. SPIR-V: 
+   1. Unlike OpenGL, shader code in vulkan has to be specified in bytecode format called as SPIR-V.
+   2. Advantage: Compilers written by GPU vendors to turn shader code into native code are significantly less complex. With GLSL, some GPU vendors used their interpretation of the standard which might cause some vendor's drivers rejecting your code due to syntax errors. With a straightforward bytecode format like SPIR-V that will hopefully be avoided.
+#### glslc: a command line compiler for GLSL/HLSL to SPIR-V
