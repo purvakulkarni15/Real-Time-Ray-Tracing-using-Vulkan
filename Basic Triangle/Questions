@@ -1,0 +1,7 @@
+1. My understanding is that a framebuffer is like a pointer to an image currently being presented.
+Why do we need to have an array of framebuffers corresponding to every image in swapchain as shown in this example- https://vulkan-tutorial.com/Drawing_a_triangle/Drawing/Framebuffers? 
+The example uses a swapchain containing images having same cofiguration for color attachment and layouts.
+
+2. 
+
+
