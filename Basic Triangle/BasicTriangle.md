@@ -178,7 +178,7 @@
    2. These images are later submitted to swap chain via present queue to be presented on our window.
    3. Hence, the format of the framebuffers should be similar to the one's in the swapchain.
 #### 2. Command Pool and Command Buffers
-   1. Manage memory. Command buffers are allocated from them.
+   1. Command pools manage memory. Command buffers are allocated from them.
    2. We pass all the rendering commands to command buffers all at once.
    3. The command buffer is submitted to the graphics queue to the the device driver.
    4. The driver then rearranges the commands based on its optimization strategies.
